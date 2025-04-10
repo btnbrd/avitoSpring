@@ -1,42 +1,41 @@
-version: '3.8'
 
 services:
-  # Сервис для Go-сервера
-  go-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: go-server
+  db:
+    image: postgres:15
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=pvz
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-
-  # Сервис для Postgres
-  postgres:
-    image: postgres:13
-    container_name: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: pvz
+      POSTGRES_DB: avito_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-  # Джоба для миграций
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=avito_db
+      - DB_USER=user
+      - DB_PASSWORD=password
+
   migrate:
-    image: golang-migrate/migrate
-    container_name: migrate
-    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/pvz?sslmode=disable", "up"]
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    command: ["postgres://user:password@db:5432/avito_db?sslmode=disable", "up"]
+    depends_on:
+      - db
     volumes:
       - ./migrations:/migrations
-    depends_on:
-      - postgres
+
+volumes:
+  postgres_data:

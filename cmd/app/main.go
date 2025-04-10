@@ -21,6 +21,6 @@ func main() {
 	// Регистрируем обработчики
 	handlers.RegisterHandlers(s)
 
-	// Запускаем сервер
+	// Запускаем серверды
 	log.Fatal(s.Run(":8080"))
 }
