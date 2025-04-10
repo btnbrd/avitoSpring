@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Сервис для Go-сервера
+  go-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: go-server
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=pvz
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  # Сервис для Postgres
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pvz
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Джоба для миграций
+  migrate:
+    image: golang-migrate/migrate
+    container_name: migrate
+    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/pvz?sslmode=disable", "up"]
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      - postgres
