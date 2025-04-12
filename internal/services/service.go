@@ -1,15 +1,21 @@
 package services
 
 import (
+	"avitoSpring/internal/config"
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
 	*gin.Engine
+	cfg *config.Config
 }
 
-// NewServer создает новый сервер с логированием
-func NewServer() *Server {
-	r := gin.Default()
-	return &Server{r}
+func NewServer(cfg *config.Config) *Server {
+	r := gin.New()
+	r.Use(gin.Recovery())
+	return &Server{Engine: r, cfg: cfg}
+}
+
+func (s *Server) GetConfig() *config.Config {
+	return s.cfg
 }
