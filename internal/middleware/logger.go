@@ -1,21 +1,20 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"log"
 	"time"
 )
 
-func InitLogger() *zap.Logger {
+func InitLogger() (*zap.Logger, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		log.Fatalf("failed to initialize zap logger: %v", err)
+		return nil, fmt.Errorf("failed to initialize zap logger: %w", err)
 	}
-	return logger
+	return logger, nil
 }
 
-// Logging - логирование запросов с использованием zap
 func Logging(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
