@@ -27,12 +27,8 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
-    environment:
-       DB_HOST: db
-       DB_PORT: 5432
-       DB_NAME: avito_db
-       DB_USER: user
-       DB_PASSWORD: password
+    volumes:
+      - ./config.yaml:/app/config.yaml
 
   migrate:
     build:
@@ -47,3 +43,4 @@ services:
 
 volumes:
   postgres_data:
+    name: avitospring_postgres_data

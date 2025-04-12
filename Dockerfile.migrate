@@ -1,8 +1,5 @@
-# Используем официальный образ с migrate
 FROM migrate/migrate
 
-# Копируем файлы миграций
 COPY migrations /migrations
 
-# Указываем точку входа (будет переопределена в docker-compose)
 ENTRYPOINT ["migrate", "-path", "/migrations", "-database"]
