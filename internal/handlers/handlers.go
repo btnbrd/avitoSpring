@@ -18,13 +18,9 @@ func NewHandlers(authService *services.AuthService) *Handlers {
 
 func RegisterHandlers(s *services.Server, authService *services.AuthService) {
 	h := NewHandlers(authService)
-
-	// Регистрируем маршруты
 	s.POST("/dummyLogin", h.DummyLoginHandler)
-	s.POST("/register", h.RegisterHandler) // Добавляем маршрут для /register
-	s.POST("/login", h.LoginHandler)       // Добавляем маршрут для /login
-
-	// Применяем middleware авторизации к маршрутам, которые требуют авторизации
+	s.POST("/register", h.RegisterHandler)
+	s.POST("/login", h.LoginHandler)
 	s.POST("/pvz", h.AuthMiddleware(), h.PvzHandler)
 	s.GET("/pvz", h.AuthMiddleware(), h.PvzGetHandler)
 	s.POST("/receptions", h.AuthMiddleware(), h.ReceptionHandler)
@@ -48,9 +44,7 @@ func (h *Handlers) RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (h *Handlers) LoginHandler(c *gin.Context) {
@@ -69,9 +63,7 @@ func (h *Handlers) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (h *Handlers) DummyLoginHandler(c *gin.Context) {
@@ -90,10 +82,7 @@ func (h *Handlers) DummyLoginHandler(c *gin.Context) {
 		return
 	}
 
-	// Возвращаем только токен, как указано в спецификации
-	c.JSON(http.StatusOK, gin.H{
-		"token": token,
-	})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (h *Handlers) AuthMiddleware() gin.HandlerFunc {
@@ -112,7 +101,6 @@ func (h *Handlers) AuthMiddleware() gin.HandlerFunc {
 		}
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-
 		role, err := h.authService.ValidateToken(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -132,25 +120,17 @@ func (h *Handlers) PvzHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Этот эндпоинт создает новый ПВЗ. Доступ только для модераторов.",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Этот эндпоинт создает новый ПВЗ. Доступ только для модераторов."})
 }
 
 func (h *Handlers) PvzGetHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Этот эндпоинт получает список ПВЗ с возможностью фильтрации по дате и пагинации.",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Этот эндпоинт получает список ПВЗ с возможностью фильтрации по дате и пагинации."})
 }
 
 func (h *Handlers) ReceptionHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Этот эндпоинт создает новую приемку товаров для ПВЗ.",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Этот эндпоинт создает новую приемку товаров для ПВЗ."})
 }
 
 func (h *Handlers) ProductHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Этот эндпоинт добавляет товар в текущую приемку для ПВЗ.",
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Этот эндпоинт добавляет товар в текущую приемку для ПВЗ."})
 }

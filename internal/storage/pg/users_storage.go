@@ -17,20 +17,9 @@ type UserStoragePG struct {
 
 var _ storage.UserStorage = (*UserStoragePG)(nil)
 
-func NewUserStorage(db *sql.DB) (*UserStoragePG, error) {
-	//connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-	//	cfg.Database.Host, cfg.Database.Port, cfg.Database.User, cfg.Database.Password, cfg.Database.Name)
-	//
-	//db, err := sql.Open("postgres", connStr)
-	//if err != nil {
-	//	return nil, fmt.Errorf("failed to open database: %w", err)
-	//}
-	//
-	//if err := db.Ping(); err != nil {
-	//	return nil, fmt.Errorf("failed to ping database: %w", err)
-	//}
+func NewUserStorage(db *sql.DB) *UserStoragePG {
 
-	return &UserStoragePG{DB: db}, nil
+	return &UserStoragePG{DB: db}
 }
 
 func (s *UserStoragePG) CreateUser(user *models.User, password string) (string, error) {

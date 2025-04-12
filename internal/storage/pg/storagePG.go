@@ -8,10 +8,11 @@ import (
 )
 
 type Storage struct {
-	DB             *sql.DB
-	UserStorage    storage.UserStorage
-	PVZStorage     storage.PVZStorageI
-	ProductStorage storage.ProductStorage
+	DB               *sql.DB
+	UserStorage      storage.UserStorage
+	PVZStorage       storage.PVZStorageI
+	ProductStorage   storage.ProductStorage
+	ReceptionStorage storage.ReceptionStorage
 }
 
 func NewStorage(cfg *config.Config) (*Storage, error) {
@@ -27,15 +28,11 @@ func NewStorage(cfg *config.Config) (*Storage, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	userStorage, err := NewUserStorage(db)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create User storage: %w", err)
-	}
-
 	return &Storage{
-		DB:             db,
-		UserStorage:    userStorage,
-		PVZStorage:     NewPVZStorage(db),
-		ProductStorage: NewProductStorage(db),
+		DB:               db,
+		UserStorage:      NewUserStorage(db),
+		PVZStorage:       NewPVZStorage(db),
+		ProductStorage:   NewProductStorage(db),
+		ReceptionStorage: NewReceptionStorage(db),
 	}, nil
 }

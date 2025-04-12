@@ -22,13 +22,13 @@ func main() {
 	}
 	defer logger.Sync()
 
-	store, err := pg.NewUserStorage(cfg)
+	store, err := pg.NewStorage(cfg)
 	if err != nil {
 		logger.Fatal("Failed to connect to database", zap.Error(err))
 	}
 	defer store.DB.Close()
 
-	authService := services.NewAuthService(store)
+	authService := services.NewAuthService(store.UserStorage)
 
 	s := services.NewServer(cfg)
 
