@@ -1,26 +1,42 @@
 package main
 
 import (
+	"avitoSpring/internal/config"
 	"avitoSpring/internal/handlers"
 	"avitoSpring/internal/middleware"
 	"avitoSpring/internal/services"
-	//"fmt"
+	"avitoSpring/internal/storage/pg"
+	"go.uber.org/zap"
 	"log"
 )
 
 func main() {
-	logger := middleware.InitLogger()
+	cfg, err := config.LoadConfig("config.yaml")
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
+	logger, err := middleware.InitLogger()
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
 	defer logger.Sync()
 
-	// Создаем сервер
-	s := services.NewServer()
+	store, err := pg.NewUserStorage(cfg)
+	if err != nil {
+		logger.Fatal("Failed to connect to database", zap.Error(err))
+	}
+	defer store.DB.Close()
 
-	// Регистрируем middleware для логирования
+	authService := services.NewAuthService(store)
+
+	s := services.NewServer(cfg)
+
 	s.Use(middleware.Logging(logger))
 
-	// Регистрируем обработчики
-	handlers.RegisterHandlers(s)
+	handlers.RegisterHandlers(s, authService)
 
-	// Запускаем серверды
-	log.Fatal(s.Run(":8080"))
+	if err := s.Run(":8080"); err != nil {
+		logger.Fatal("Failed to start server", zap.Error(err))
+	}
 }
