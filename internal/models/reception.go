@@ -13,3 +13,8 @@ type Reception struct {
 	PVZID    string          `json:"pvzId"`
 	Status   ReceptionStatus `json:"status"`
 }
+
+type ReceptionWithProducts struct {
+	Reception *Reception
+	Products  []*Product
+}
