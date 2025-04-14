@@ -29,12 +29,15 @@ func main() {
 	defer store.DB.Close()
 
 	authService := services.NewAuthService(store.UserStorage)
+	productService := services.NewProductService(store.ProductStorage, store.ReceptionStorage)
+	pvzService := services.NewPVZService(store.PVZStorage)
+	receiptService := services.NewReceptionService(store.ReceptionStorage)
 
 	s := services.NewServer(cfg)
 
 	s.Use(middleware.Logging(logger))
 
-	handlers.RegisterHandlers(s, authService)
+	handlers.RegisterHandlers(s, authService, pvzService, receiptService, productService)
 
 	if err := s.Run(":8080"); err != nil {
 		logger.Fatal("Failed to start server", zap.Error(err))
