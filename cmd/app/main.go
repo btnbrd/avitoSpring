@@ -7,6 +7,8 @@ import (
 	"avitoSpring/internal/server"
 	"avitoSpring/internal/services"
 	"avitoSpring/internal/storage/pg"
+	"context"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"log"
 )
@@ -22,6 +24,17 @@ func main() {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 	defer logger.Sync()
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Addr,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
+	})
+	defer rdb.Close()
+
+	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
+		logger.Fatal("Failed to connect to Redis", zap.Error(err))
+	}
 
 	store, err := pg.NewStorage(cfg)
 	if err != nil {
