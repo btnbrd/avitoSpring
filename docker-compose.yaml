@@ -16,12 +16,12 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+#  redis:
+#    image: redis:7
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redis_data:/data
 
   app:
     build:
@@ -34,6 +34,9 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./config.yaml:/app/config.yaml
+    env_file:
+      - .env
+
 
   migrate:
     build:
@@ -49,5 +52,5 @@ services:
 volumes:
   postgres_data:
     name: avitospring_postgres_data
-  redis_data:
-    name: avitospring_redis_data
+#  redis_data:
+#    name: avitospring_redis_data
