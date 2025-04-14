@@ -34,20 +34,6 @@ func (s *PVZService) CreatePVZ(pvz *models.PVZ) (string, error) {
 	return s.store.CreatePVZ(pvz)
 }
 
-//func (s *PVZService) GetPVZs(filterDate string, page, pageSize int) ([]*models.PVZ, error) {
-//	if page < 1 {
-//		return nil, fmt.Errorf("page must be greater than 0")
-//	}
-//	if pageSize < 1 {
-//		return nil, fmt.Errorf("pageSize must be greater than 0")
-//	}
-//
-//	if filterDate != "" {
-//	}
-//
-//	return s.store.GetPVZs(filterDate, page, pageSize)
-//}
-
 func (s *PVZService) GetPVZsWithDetails(startDate, endDate string, page, pageSize int) ([]*models.PVZWithDetails, error) {
 	if page < 1 {
 		return nil, fmt.Errorf("page must be greater than 0")
