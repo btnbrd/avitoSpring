@@ -64,7 +64,7 @@ func TestAuthHandler_RegisterHandler(t *testing.T) {
 			mockSetup: func(m *mockAuthService) {
 				m.On("Register", "test@example.com", "password123", models.Role("employee")).Return("employee-token", nil)
 			},
-			wantStatus: http.StatusOK,
+			wantStatus: http.StatusCreated,
 			wantBody:   `{"token":"employee-token"}`,
 		},
 		{
