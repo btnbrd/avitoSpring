@@ -4,6 +4,7 @@ import (
 	"avitoSpring/internal/config"
 	"avitoSpring/internal/handlers"
 	"avitoSpring/internal/middleware"
+	"avitoSpring/internal/server"
 	"avitoSpring/internal/services"
 	"avitoSpring/internal/storage/pg"
 	"go.uber.org/zap"
@@ -28,16 +29,17 @@ func main() {
 	}
 	defer store.DB.Close()
 
-	authService := services.NewAuthService(store.UserStorage)
+	jwtService := services.NewJWTService()
+	authService := services.NewAuthService(store.UserStorage, jwtService)
 	productService := services.NewProductService(store.ProductStorage, store.ReceptionStorage)
 	pvzService := services.NewPVZService(store.PVZStorage)
 	receiptService := services.NewReceptionService(store.ReceptionStorage)
 
-	s := services.NewServer(cfg)
+	s := server.NewServer(cfg)
 
 	s.Use(middleware.Logging(logger))
 
-	handlers.RegisterHandlers(s, authService, pvzService, receiptService, productService)
+	handlers.RegisterHandlers(s, authService, pvzService, receiptService, productService, jwtService)
 
 	if err := s.Run(":8080"); err != nil {
 		logger.Fatal("Failed to start server", zap.Error(err))
