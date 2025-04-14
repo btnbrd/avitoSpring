@@ -30,10 +30,10 @@ func (s *UserStoragePG) CreateUser(user *models.User, password string) (string, 
 
 	userID := uuid.New().String()
 	query := `
-        INSERT INTO users (email, password_hash, role, created_at)
-        VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+        INSERT INTO users (id, email, password_hash, role)
+        VALUES ($1, $2, $3, $4)
         RETURNING id`
-	err = s.DB.QueryRow(query, user.Email, string(hash), user.Role).Scan(&userID)
+	err = s.DB.QueryRow(query, userID, user.Email, string(hash), user.Role).Scan(&userID)
 	if err != nil {
 		return "", fmt.Errorf("failed to create user: %w", err)
 	}

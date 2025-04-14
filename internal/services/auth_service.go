@@ -25,7 +25,7 @@ func NewAuthService(store storage.UserStorage) *AuthService {
 func (s *AuthService) generateJWTToken(role models.Role) (string, error) {
 	claims := jwt.MapClaims{
 		"role": role,
-		"exp":  time.Now().Add(time.Hour).Unix(),
+		"exp":  time.Now().Add(10 * time.Hour).Unix(),
 		"iat":  time.Now().Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -37,7 +37,7 @@ func (s *AuthService) generateJWTToken(role models.Role) (string, error) {
 }
 
 func (s *AuthService) DummyLogin(role models.Role) (string, error) {
-	if role != models.RoleClient && role != models.RoleModerator {
+	if role != models.RoleEmployee && role != models.RoleModerator {
 		return "", fmt.Errorf("invalid role: %s", role)
 	}
 	return s.generateJWTToken(role)
@@ -47,7 +47,7 @@ func (s *AuthService) Register(email, password string, role models.Role) (string
 	if email == "" || password == "" {
 		return "", errors.New("email and password are required")
 	}
-	if role != models.RoleClient && role != models.RoleModerator {
+	if role != models.RoleEmployee && role != models.RoleModerator {
 		return "", fmt.Errorf("invalid role: %s", role)
 	}
 	existingUser, err := s.store.GetUserByEmail(email)
@@ -111,7 +111,7 @@ func (s *AuthService) ValidateToken(tokenString string) (models.Role, error) {
 	if !ok {
 		return "", fmt.Errorf("role not found in token")
 	}
-	if models.Role(role) != models.RoleClient && models.Role(role) != models.RoleModerator {
+	if models.Role(role) != models.RoleEmployee && models.Role(role) != models.RoleModerator {
 		return "", fmt.Errorf("invalid role in token: %s", role)
 	}
 	return models.Role(role), nil

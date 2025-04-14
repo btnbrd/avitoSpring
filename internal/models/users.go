@@ -3,12 +3,12 @@ package models
 type Role string
 
 const (
-	RoleClient    Role = "client"
+	RoleEmployee  Role = "employee"
 	RoleModerator Role = "moderator"
 )
 
 type User struct {
-	ID    string
-	Email string
-	Role  Role
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Role  Role   `json:"role"`
 }
