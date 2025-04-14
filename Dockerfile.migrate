@@ -1,0 +1,5 @@
+FROM migrate/migrate
+
+COPY migrations /migrations
+
+ENTRYPOINT ["migrate", "-path", "/migrations", "-database"]

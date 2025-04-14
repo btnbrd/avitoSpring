@@ -1,0 +1,56 @@
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: avito_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d avito_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+#  redis:
+#    image: redis:7
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redis_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    env_file:
+      - .env
+
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    command: ["postgres://user:password@db:5432/avito_db?sslmode=disable", "up"]
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./migrations:/migrations
+
+volumes:
+  postgres_data:
+    name: avitospring_postgres_data
+#  redis_data:
+#    name: avitospring_redis_data
