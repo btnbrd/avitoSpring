@@ -44,7 +44,6 @@ func TestPVZIntegration(t *testing.T) {
 		t.Logf("Created PVZ with ID: %s", pvzID)
 	})
 
-	// Подтест 2: Создание приёмки
 	t.Run("CreateReception", func(t *testing.T) {
 		var err error
 		receptionID, err = createReception(authHeaderEmployee, pvzID)
@@ -52,7 +51,6 @@ func TestPVZIntegration(t *testing.T) {
 		t.Logf("Created reception with ID: %s", receptionID)
 	})
 
-	// Подтест 3: Добавление 50 товаров
 	t.Run("Create50Products", func(t *testing.T) {
 		for i := 0; i < 50; i++ {
 			productType := models.ProductTypeFootwear
