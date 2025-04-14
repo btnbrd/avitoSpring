@@ -8,15 +8,15 @@ import (
 	"strings"
 )
 
-type Authenticator struct {
+type Authorizer struct {
 	jwtService services.JWTServiceInterface
 }
 
-func NewAuthenticator(jwt services.JWTServiceInterface) *Authenticator {
-	return &Authenticator{jwtService: jwt}
+func NewAuthorizer(jwt services.JWTServiceInterface) *Authorizer {
+	return &Authorizer{jwtService: jwt}
 }
 
-func (h *Authenticator) AuthMiddleware() gin.HandlerFunc {
+func (h *Authorizer) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {

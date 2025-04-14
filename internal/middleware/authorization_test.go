@@ -11,14 +11,12 @@ import (
 	"testing"
 )
 
-// Заглушка для JWTServiceInterface
 type stubJWTService struct {
 	validateErr bool
 	role        models.Role
 }
 
 func (s *stubJWTService) GenerateToken(role models.Role) (string, error) {
-	// Не используется в middleware, но реализуем для полноты
 	return string(role) + "-token", nil
 }
 
@@ -36,7 +34,7 @@ var _ services.JWTServiceInterface = (*stubJWTService)(nil)
 
 func TestNewAuthenticator(t *testing.T) {
 	jwtService := &stubJWTService{}
-	authenticator := NewAuthenticator(jwtService)
+	authenticator := NewAuthorizer(jwtService)
 
 	if authenticator == nil {
 		t.Fatal("Expected non-nil Authenticator")
@@ -102,9 +100,8 @@ func TestAuthMiddleware(t *testing.T) {
 				validateErr: tt.validateErr,
 				role:        tt.role,
 			}
-			authenticator := NewAuthenticator(jwtService)
+			authenticator := NewAuthorizer(jwtService)
 
-			// Настраиваем тестовый обработчик для проверки роли в контексте
 			var capturedRole models.Role
 			handler := func(c *gin.Context) {
 				if role, exists := c.Get("role"); exists {
@@ -116,7 +113,6 @@ func TestAuthMiddleware(t *testing.T) {
 				c.String(http.StatusOK, "")
 			}
 
-			// Создаем Gin роутер с middleware
 			r := gin.New()
 			r.Use(authenticator.AuthMiddleware())
 			r.GET("/test", handler)
@@ -127,21 +123,17 @@ func TestAuthMiddleware(t *testing.T) {
 				req.Header.Set(k, v)
 			}
 
-			// Выполняем запрос
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 
-			// Проверяем статус
 			if w.Code != tt.wantStatus {
 				t.Errorf("Expected status %d, got %d", tt.wantStatus, w.Code)
 			}
 
-			// Проверяем тело ответа
 			if strings.TrimSpace(w.Body.String()) != tt.wantBody {
 				t.Errorf("Expected body %q, got %q", tt.wantBody, w.Body.String())
 			}
 
-			// Проверяем роль в контексте
 			if capturedRole != tt.wantRole {
 				t.Errorf("Expected role %q in context, got %q", tt.wantRole, capturedRole)
 			}
