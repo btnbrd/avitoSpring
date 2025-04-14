@@ -1,27 +1,27 @@
-CREATE TABLE users (
-                       id SERIAL PRIMARY KEY,
-                       email VARCHAR(255) NOT NULL UNIQUE,
-                       password_hash VARCHAR(255) NOT NULL,
-                       role VARCHAR(50) NOT NULL,
-                       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS users (
+       id UUID PRIMARY KEY,
+       email TEXT NOT NULL UNIQUE CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
+       password_hash TEXT NOT NULL,
+       role TEXT NOT NULL CHECK (role IN ('employee', 'moderator'))
 );
 
+
 CREATE TABLE IF NOT EXISTS pvz (
-                                   id SERIAL PRIMARY KEY,
-                                   city VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+       id UUID PRIMARY KEY,
+       registration_date TIMESTAMP NOT NULL,
+       city TEXT NOT NULL CHECK (city IN ('Москва', 'Санкт-Петербург', 'Казань'))
+);
 
-CREATE TABLE IF NOT EXISTS goods_receipt (
-                                             id SERIAL PRIMARY KEY,
-                                             pvz_id INTEGER REFERENCES pvz(id),
-    receipt_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50) CHECK (status IN ('in_progress', 'close')) NOT NULL
-    );
+CREATE TABLE IF NOT EXISTS  receptions (
+     id UUID PRIMARY KEY,
+     datetime TIMESTAMP NOT NULL,
+     pvz_id UUID NOT NULL REFERENCES pvz(id),
+     status TEXT NOT NULL CHECK (status IN ('in_progress', 'close'))
+ );
 
-CREATE TABLE IF NOT EXISTS goods (
-                                     id SERIAL PRIMARY KEY,
-                                     receipt_id INTEGER REFERENCES goods_receipt(id),
-    type VARCHAR(50) CHECK (type IN ('electronics', 'clothes', 'shoes')) NOT NULL,
-    received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+CREATE TABLE IF NOT EXISTS products (
+     id UUID PRIMARY KEY,
+     datetime TIMESTAMP NOT NULL,
+     type TEXT NOT NULL CHECK (type IN ('электроника', 'одежда', 'обувь')),
+     reception_id UUID NOT NULL REFERENCES receptions(id)
+);
