@@ -72,6 +72,12 @@ go test ./tests/integration -run ^TestModeratorRegisterLoginAndCreatePVZ$
 
 ---
 
+# Работа с миграциями
+
+Миграции управляются через отдельный контейнер migrate, который запускает изменения в базе данных PostgreSQL из папки ./migrations
+
+---
+
 
 
 ##  Покрытие тестами
