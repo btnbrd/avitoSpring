@@ -22,7 +22,7 @@ func NewProductHandler(productService *services.ProductService, authHandler *Aut
 func (h *ProductHandler) ProductHandler(c *gin.Context) {
 	role, _ := c.Get("role")
 	if role != models.RoleEmployee {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Only employees can create products"})
+		c.JSON(http.StatusForbidden, models.Error{"Only employees can create products"})
 		return
 	}
 
@@ -31,7 +31,7 @@ func (h *ProductHandler) ProductHandler(c *gin.Context) {
 		PVZID string             `json:"pvzId" binding:"required,uuid"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.Error{err.Error()})
 		return
 	}
 
@@ -41,7 +41,7 @@ func (h *ProductHandler) ProductHandler(c *gin.Context) {
 
 	productID, err := h.productService.CreateProduct(product, req.PVZID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.Error{err.Error()})
 		return
 	}
 
