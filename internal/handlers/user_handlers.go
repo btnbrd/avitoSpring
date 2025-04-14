@@ -5,14 +5,13 @@ import (
 	"avitoSpring/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strings"
 )
 
 type AuthHandler struct {
-	authService *services.AuthService
+	authService services.AuthServiceInterface
 }
 
-func NewAuthHandler(authService *services.AuthService) *AuthHandler {
+func NewAuthHandler(authService services.AuthServiceInterface) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
@@ -76,32 +75,4 @@ func (h *AuthHandler) DummyLoginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
-}
-
-func (h *AuthHandler) AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, models.Error{"Authorization header is required"})
-			c.Abort()
-			return
-		}
-
-		if !strings.HasPrefix(authHeader, "Bearer ") {
-			c.JSON(http.StatusUnauthorized, models.Error{"Authorization header must start with 'Bearer '"})
-			c.Abort()
-			return
-		}
-
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-		role, err := h.authService.ValidateToken(token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, models.Error{err.Error()})
-			c.Abort()
-			return
-		}
-
-		c.Set("role", role)
-		c.Next()
-	}
 }

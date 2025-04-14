@@ -39,12 +39,6 @@ func (h *PVZHandler) PvzHandler(c *gin.Context) {
 		})
 		return
 	}
-	//if req.City == "" {
-	//	c.JSON(http.StatusBadRequest, models.Error{
-	//		Message: "City is required",
-	//	})
-	//	return
-	//}
 
 	pvz := &models.PVZ{
 		//RegistrationDate: req.RegistrationDate,
@@ -97,12 +91,12 @@ func (h *PVZHandler) PvzGetHandler(c *gin.Context) {
 		return
 	}
 
-	var response []gin.H
+	response := make([]gin.H, 0)
 	for _, detail := range pvzDetails {
 		if detail == nil || detail.PVZ == nil {
 			continue
 		}
-		var receptionsResponse []gin.H
+		receptionsResponse := make([]gin.H, 0)
 		for _, r := range detail.Receptions {
 			if r == nil || r.Reception == nil {
 				continue
