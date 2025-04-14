@@ -13,7 +13,6 @@ import (
 	"testing"
 )
 
-// Мок для AuthServiceInterface
 type mockAuthService struct {
 	mock.Mock
 }
@@ -76,7 +75,7 @@ func TestAuthHandler_RegisterHandler(t *testing.T) {
 			},
 			mockSetup:  func(m *mockAuthService) {},
 			wantStatus: http.StatusBadRequest,
-			wantBody:   `{"message":"Key: 'req.Email' Error:Field validation for 'Email' failed on the 'required' tag"}`,
+			wantBody:   `{"message":"Key: 'Email' Error:Field validation for 'Email' failed on the 'required' tag"}`,
 		},
 		{
 			name: "Invalid email",
@@ -87,7 +86,7 @@ func TestAuthHandler_RegisterHandler(t *testing.T) {
 			},
 			mockSetup:  func(m *mockAuthService) {},
 			wantStatus: http.StatusBadRequest,
-			wantBody:   `{"message":"Key: 'req.Email' Error:Field validation for 'Email' failed on the 'email' tag"}`,
+			wantBody:   `{"message":"Key: 'Email' Error:Field validation for 'Email' failed on the 'email' tag"}`,
 		},
 		{
 			name: "AuthService error",
@@ -162,7 +161,7 @@ func TestAuthHandler_LoginHandler(t *testing.T) {
 			},
 			mockSetup:  func(m *mockAuthService) {},
 			wantStatus: http.StatusBadRequest,
-			wantBody:   `{"message":"Key: 'req.Password' Error:Field validation for 'Password' failed on the 'required' tag"}`,
+			wantBody:   `{"message":"Key: 'Password' Error:Field validation for 'Password' failed on the 'required' tag"}`,
 		},
 		{
 			name: "AuthService error",
