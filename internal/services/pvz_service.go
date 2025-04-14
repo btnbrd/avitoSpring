@@ -11,6 +11,13 @@ type PVZService struct {
 	store storage.PVZStorageI
 }
 
+type PVZServiceInterface interface {
+	CreatePVZ(pvz *models.PVZ) (string, error)
+	GetPVZsWithDetails(startDate, endDate string, page, pageSize int) ([]*models.PVZWithDetails, error)
+}
+
+var _ PVZServiceInterface = (*PVZService)(nil)
+
 func NewPVZService(store storage.PVZStorageI) *PVZService {
 	return &PVZService{store: store}
 }
@@ -27,19 +34,19 @@ func (s *PVZService) CreatePVZ(pvz *models.PVZ) (string, error) {
 	return s.store.CreatePVZ(pvz)
 }
 
-func (s *PVZService) GetPVZs(filterDate string, page, pageSize int) ([]*models.PVZ, error) {
-	if page < 1 {
-		return nil, fmt.Errorf("page must be greater than 0")
-	}
-	if pageSize < 1 {
-		return nil, fmt.Errorf("pageSize must be greater than 0")
-	}
-
-	if filterDate != "" {
-	}
-
-	return s.store.GetPVZs(filterDate, page, pageSize)
-}
+//func (s *PVZService) GetPVZs(filterDate string, page, pageSize int) ([]*models.PVZ, error) {
+//	if page < 1 {
+//		return nil, fmt.Errorf("page must be greater than 0")
+//	}
+//	if pageSize < 1 {
+//		return nil, fmt.Errorf("pageSize must be greater than 0")
+//	}
+//
+//	if filterDate != "" {
+//	}
+//
+//	return s.store.GetPVZs(filterDate, page, pageSize)
+//}
 
 func (s *PVZService) GetPVZsWithDetails(startDate, endDate string, page, pageSize int) ([]*models.PVZWithDetails, error) {
 	if page < 1 {

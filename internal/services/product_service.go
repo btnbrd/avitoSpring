@@ -12,6 +12,13 @@ type ProductService struct {
 	receptionStorage storage.ReceptionStorage
 }
 
+type ProductServiceInterface interface {
+	CreateProduct(product *models.Product, pvzID string) (string, error)
+	DeleteLastProduct(pvzID string) error
+}
+
+var _ ProductServiceInterface = (*ProductService)(nil)
+
 func NewProductService(store storage.ProductStorage, receptionStorage storage.ReceptionStorage) *ProductService {
 	return &ProductService{productStorage: store, receptionStorage: receptionStorage}
 }

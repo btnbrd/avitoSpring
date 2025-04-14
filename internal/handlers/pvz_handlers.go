@@ -9,11 +9,11 @@ import (
 )
 
 type PVZHandler struct {
-	pvzService  *services.PVZService
+	pvzService  services.PVZServiceInterface
 	authHandler *AuthHandler
 }
 
-func NewPVZHandler(pvzService *services.PVZService, authHandler *AuthHandler) *PVZHandler {
+func NewPVZHandler(pvzService services.PVZServiceInterface, authHandler *AuthHandler) *PVZHandler {
 	return &PVZHandler{
 		pvzService:  pvzService,
 		authHandler: authHandler,
@@ -31,7 +31,6 @@ func (h *PVZHandler) PvzHandler(c *gin.Context) {
 	}
 
 	var req struct {
-		//RegistrationDate string      `json:"registrationDate" binding:"required,datetime=2006-01-02T15:04:05Z"`
 		City models.City `json:"city" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -40,6 +39,12 @@ func (h *PVZHandler) PvzHandler(c *gin.Context) {
 		})
 		return
 	}
+	//if req.City == "" {
+	//	c.JSON(http.StatusBadRequest, models.Error{
+	//		Message: "City is required",
+	//	})
+	//	return
+	//}
 
 	pvz := &models.PVZ{
 		//RegistrationDate: req.RegistrationDate,
@@ -94,8 +99,14 @@ func (h *PVZHandler) PvzGetHandler(c *gin.Context) {
 
 	var response []gin.H
 	for _, detail := range pvzDetails {
+		if detail == nil || detail.PVZ == nil {
+			continue
+		}
 		var receptionsResponse []gin.H
 		for _, r := range detail.Receptions {
+			if r == nil || r.Reception == nil {
+				continue
+			}
 			receptionsResponse = append(receptionsResponse, gin.H{
 				"reception": r.Reception,
 				"products":  r.Products,

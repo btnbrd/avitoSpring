@@ -8,11 +8,11 @@ import (
 )
 
 type ProductHandler struct {
-	productService *services.ProductService
+	productService services.ProductServiceInterface
 	authHandler    *AuthHandler
 }
 
-func NewProductHandler(productService *services.ProductService, authHandler *AuthHandler) *ProductHandler {
+func NewProductHandler(productService services.ProductServiceInterface, authHandler *AuthHandler) *ProductHandler {
 	return &ProductHandler{
 		productService: productService,
 		authHandler:    authHandler,
@@ -44,10 +44,8 @@ func (h *ProductHandler) ProductHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.Error{err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"id": productID,
-	})
+	product.ID = productID
+	c.JSON(http.StatusCreated, product)
 }
 
 func (h *ProductHandler) DeleteLastProductHandler(c *gin.Context) {

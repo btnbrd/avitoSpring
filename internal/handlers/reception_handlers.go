@@ -8,11 +8,11 @@ import (
 )
 
 type ReceptionHandler struct {
-	receptionService *services.ReceptionService
+	receptionService services.ReceptionServiceInterface
 	authHandler      *AuthHandler
 }
 
-func NewReceptionHandler(receptionService *services.ReceptionService, authHandler *AuthHandler) *ReceptionHandler {
+func NewReceptionHandler(receptionService services.ReceptionServiceInterface, authHandler *AuthHandler) *ReceptionHandler {
 	return &ReceptionHandler{
 		receptionService: receptionService,
 		authHandler:      authHandler,

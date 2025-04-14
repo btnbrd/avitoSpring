@@ -12,49 +12,6 @@ type PVZStoragePG struct {
 	DB *sql.DB
 }
 
-//func (p PVZStoragePG) DeleteLastProduct(pvzID string) error {
-//	var receptionID string
-//	query := `
-//        SELECT id
-//        FROM receptions
-//        WHERE pvz_id = $1 AND status = 'in_progress'
-//        ORDER BY datetime DESC
-//        LIMIT 1`
-//	err := p.DB.QueryRow(query, pvzID).Scan(&receptionID)
-//	if err == sql.ErrNoRows {
-//		return fmt.Errorf("no open reception found for PVZ %s", pvzID)
-//	}
-//	if err != nil {
-//		return fmt.Errorf("failed to find open reception: %w", err)
-//	}
-//
-//	// Находим последний добавленный товар в этой приемке
-//	var productID string
-//	productQuery := `
-//        SELECT id
-//        FROM products
-//        WHERE reception_id = $1
-//        ORDER BY datetime DESC
-//        LIMIT 1`
-//	err = p.DB.QueryRow(productQuery, receptionID).Scan(&productID)
-//	if err == sql.ErrNoRows {
-//		return fmt.Errorf("no products found in reception %s", receptionID)
-//	}
-//	if err != nil {
-//		return fmt.Errorf("failed to find last product: %w", err)
-//	}
-//
-//	deleteQuery := `
-//        DELETE FROM products
-//        WHERE id = $1`
-//	_, err = p.DB.Exec(deleteQuery, productID)
-//	if err != nil {
-//		return fmt.Errorf("failed to delete product: %w", err)
-//	}
-//
-//	return nil
-//}
-
 func (p PVZStoragePG) CreatePVZ(pvz *models.PVZ) (string, error) {
 	//TODO implement me
 	pvzID := uuid.New().String()
@@ -71,37 +28,37 @@ func (p PVZStoragePG) CreatePVZ(pvz *models.PVZ) (string, error) {
 	return pvzID, nil
 }
 
-func (p PVZStoragePG) GetPVZs(filterDate string, page, pageSize int) ([]*models.PVZ, error) {
-	var pvzs []*models.PVZ
-	offset := (page - 1) * pageSize
-
-	query := `
-        SELECT id, registration_date, city
-        FROM pvz
-        WHERE ($1 = '' OR registration_date >= $1)
-        ORDER BY registration_date
-        LIMIT $2 OFFSET $3`
-	rows, err := p.DB.Query(query, filterDate, pageSize, offset)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get PVZs: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var pvz models.PVZ
-		err := rows.Scan(&pvz.ID, &pvz.RegistrationDate, &pvz.City)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan PVZ: %w", err)
-		}
-		pvzs = append(pvzs, &pvz)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating PVZs: %w", err)
-	}
-
-	return pvzs, nil
-}
+//func (p PVZStoragePG) GetPVZs(filterDate string, page, pageSize int) ([]*models.PVZ, error) {
+//	var pvzs []*models.PVZ
+//	offset := (page - 1) * pageSize
+//
+//	query := `
+//        SELECT id, registration_date, city
+//        FROM pvz
+//        WHERE ($1 = '' OR registration_date >= $1)
+//        ORDER BY registration_date
+//        LIMIT $2 OFFSET $3`
+//	rows, err := p.DB.Query(query, filterDate, pageSize, offset)
+//	if err != nil {
+//		return nil, fmt.Errorf("failed to get PVZs: %w", err)
+//	}
+//	defer rows.Close()
+//
+//	for rows.Next() {
+//		var pvz models.PVZ
+//		err := rows.Scan(&pvz.ID, &pvz.RegistrationDate, &pvz.City)
+//		if err != nil {
+//			return nil, fmt.Errorf("failed to scan PVZ: %w", err)
+//		}
+//		pvzs = append(pvzs, &pvz)
+//	}
+//
+//	if err := rows.Err(); err != nil {
+//		return nil, fmt.Errorf("error iterating PVZs: %w", err)
+//	}
+//
+//	return pvzs, nil
+//}
 
 var _ storage.PVZStorageI = (*PVZStoragePG)(nil)
 
@@ -112,6 +69,7 @@ func NewPVZStorage(db *sql.DB) *PVZStoragePG {
 
 func (s *PVZStoragePG) GetPVZsWithDetails(startDate, endDate string, page, pageSize int) ([]*models.PVZWithDetails, error) {
 	var pvzDetails []*models.PVZWithDetails
+	pvzDetails = make([]*models.PVZWithDetails, 0)
 	offset := (page - 1) * pageSize
 
 	query := `
