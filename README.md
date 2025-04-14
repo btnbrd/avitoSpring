@@ -23,8 +23,8 @@ cd avitoSpring
 docker-compose up --build
 ```
 
-Сервис стартует на порте `8080`  
-PostgreSQL — на `localhost:5432` (пользователь и пароль указаны в `config.yaml`)
+Сервис стартует на порте `localhost:8080`  (Порт в указывается в config.yaml)
+
 
 ---
 
